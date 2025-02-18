@@ -1,0 +1,5 @@
+FROM postgres:latest
+ENV POSTGRES_DB=postgres_tsp_db
+ENV POSTGRES_USER=listussr
+ENV POSTGRES_PASSWORD=1234
+EXPOSE 5432

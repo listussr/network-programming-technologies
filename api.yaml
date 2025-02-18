@@ -1,0 +1,451 @@
+openapi: 3.0.3
+info:
+  title: Facial emotion recognition service
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+paths:
+  /models:
+    get:
+      tags: 
+        - Models
+      summary: Getting all models
+      operationId: getAllModels
+      responses:
+        '200':
+          description: Getting all models
+          content: 
+            application/json: 
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/ModelDto'
+        '400':
+          description: Models are not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /datasets:
+    get:
+      tags: 
+        - Datasets
+      summary: Getting all datasets
+      operationId: getAllDatasets
+      responses:
+        '200':
+          description: Getting all models
+          content: 
+            application/json: 
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/DatasetDto'
+        '400':
+          description: Datasets are not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                
+  /trainedModels:
+    get:
+      tags: 
+        - Trained Models
+      summary: Getting all trained models
+      operationId: getAllTrainedModels
+      responses:
+        '200':
+          description: Getting all models
+          content: 
+            application/json: 
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/TrainedModelDto'
+        '400':
+          description: Models are not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                
+  /trainedModels/getTrainedModelById:
+    get:
+      tags:
+        - Trained Model
+      summary: Getting trained model by model and dataset names
+      operationId: getTrainedModelById
+      parameters: 
+        - name: model_id
+          in: query
+          description: Model id
+          required: true
+          schema:
+            type: number
+            
+      responses:
+        '200':
+          description: Getting model by id
+          content: 
+            application/json: 
+              schema:
+                  $ref: '#/components/schemas/TrainedModelDto'
+        '400':
+          description: Models are not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /users:
+    get:
+      tags:
+        - Get all Users
+      summary: Gettings all users list
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: Getting all users list
+          content: 
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/UserDto'
+        '400':
+          description: Users are not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /users/postUser:
+    post:
+      tags:
+        - Post User
+      summary: Post User
+      operationId: postUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateDto'
+      responses:
+        '200':
+          description: Succesfully posted
+          content: 
+            application/json:
+              schema:
+                type: number
+                example: 10006
+        '400':
+          description: Models are not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /users/getUserById:
+    get:
+      tags:
+        - Get User by id
+      summary: Getting User by id
+      operationId: getUserById
+      parameters: 
+        - name: user_id
+          in: query
+          description: User id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Getting user by id
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '400':
+          description: Users are not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /getResult:
+    get:
+      tags:
+        - Get models prediction
+      summary: Get models prediction
+      parameters: 
+        - name: model_request
+          in: query
+          description: User id
+          required: true
+          schema:
+             $ref: '#/components/schemas/ModelRequestDto'
+      responses:
+        '200':
+          description: Getting user by id
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelResponseDto'
+        '400':
+          description: Models are not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /getHistoryByUser:
+    get:
+      tags:
+        - Get user history of predictions
+      summary: Get users history of predictions
+      parameters: 
+        - name: user_id
+          in: query
+          description: User id
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Getting user's history by id
+          content: 
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/HistoryResponseDto'
+        '400':
+          description: Models are not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ModelDto:
+      required:
+        - name
+        - description
+      type: object
+      properties:
+        name:
+          type: string
+          example: DenseNet
+          description: Name of the transfer model
+        description:
+          type: string
+          example: DenseNet model
+          description: Description of the model
+          
+    DatasetDto:
+      required:
+        - name
+        - description
+        - features_size
+        - targets_size
+        - set_size
+      type: object
+      properties:
+        name:
+          type: string
+          example: AffectNet
+          description: Name of the dataset
+        description:
+          type: string
+          example: AffectNet dataset
+          description: Description of the dataset
+        features_size:
+          type: number
+          example: 784
+          description: Size of input image
+        targets_size:
+          type: number
+          example: 8
+          description: Amount of classes
+        set_size:
+          type: number
+          example: 28715
+          description: Amount of elements in dataset
+          
+    TrainedModelDto:
+      required:
+        - model_id
+        - model_name
+        - dataset_name
+        - accuracy
+      type: object
+      properties:
+        model_id:
+          type: number
+          example: 100004
+          description: Unique model number
+        model_name:
+          type: string
+          example: DenseNet
+          description: Name of the transfer model
+        dataset_name:
+          type: string
+          example: AffectNet
+          description: Name of the dataset
+        accuracy:
+          type: number
+          example: 70.15
+          description: Value of the accuracy metric
+          
+    UserDto:
+      required:
+        - id
+        - login
+        - password
+        - email
+      type: object
+      properties:
+        id:
+          type: number
+          example: 10006
+          description: Users id
+        login:
+          type: string
+          example: listussr
+          description: Users login
+        password:
+          type: string
+          example: '123456'
+          description: Users password
+        email:
+          type: string
+          example: 'listussr@gmail.com'
+          description: Users email address
+          
+    UserCreateDto:
+      required:
+        - login
+        - password
+        - email
+      type: object
+      properties:
+        login:
+          type: string
+          example: listussr
+          description: Users login
+        password:
+          type: string
+          example: '123456'
+          description: Users password
+        email:
+          type: string
+          example: 'listussr@gmail.com'
+          description: Users email address
+    
+    ModelRequestDto:
+      required:
+        - model_id
+        - pixels
+        - width
+        - height
+        - channels_number
+      type: object
+      properties:
+        model_id:
+          type: number
+          example: 100004
+          description: Unique model number
+        pixels:
+          type: string
+          example: "0 0 0 0 0.96 ... 0.65 0"
+          description: String containing pictures pixels
+        width:
+          type: number
+          example: 96
+          description: Width of the image
+        height:
+          type: number
+          example: 96
+          description: Height of the image
+        channels_number:
+          type: number
+          example: 3
+          description: Number of channels in the image
+          
+    ModelResponseDto:
+      required:
+        - model_id
+        - predictions
+      type: object
+      properties:
+        model_id:
+          type: number
+          example: 100004
+          description: Unique model number
+        result:
+          type: string
+          example: "0.13 0.2 0.67"
+          description: String that contains probabilities of classes
+          
+    HistoryResponseDto:
+      required:
+        - trained_model_id
+        - time
+        - pixels
+        - width
+        - height
+        - channels_number
+        - result
+      type: object
+      properties:
+        trained_model_id:
+          type: number
+          example: 100004
+          description: Unique model number
+        time:
+          type: string
+          example: "25.03.2024 12:42:41"
+          description: Time of getting prediction
+        pixels:
+          type: string
+          example: "0 0 0 0 0.96 ... 0.65 0"
+          description: String containing pictures pixels
+        width:
+          type: number
+          example: 96
+          description: Width of the image
+        height:
+          type: number
+          example: 96
+          description: Height of the image
+        channels_number:
+          type: number
+          example: 3
+          description: Number of channels in the image
+        result:
+          type: string
+          example: "0.13 0.2 0.67"
+          description: String that contains probabilities of classes
+          
+          
+    ErrorResponse:
+      required:
+        - exception
+        - message
+        - time
+      type: object
+      properties:
+        exception:
+          type: string
+          example: Exception
+          description: Exception name
+        message:
+          type: string
+          example: Error message
+          description: Error message
+        time:
+          type: string
+          example: 25.03.2024 12:42:41
+          description: Time of getting error

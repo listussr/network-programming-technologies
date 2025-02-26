@@ -67,22 +67,20 @@ class UserModel(models.Model):
 
 
 class Image(models.Model):
-    image_id = models.DecimalField(max_digits=6, decimal_places=0, primary_key=True)
-    pixels = models.TextField(null=False)
-    width = models.IntegerField(null=False)
-    height = models.IntegerField(null=False)
-    channels_number = models.DecimalField(max_digits=1, decimal_places=0, null=False)
-
+    image_id = models.AutoField(primary_key=True)
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     class Meta:
         verbose_name = "Image"
         verbose_name_plural = "Images"
 
 class UsageHistory(models.Model):
-    operation_id = models.DecimalField(max_digits=6, decimal_places=0, primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    trained_model = models.ForeignKey(TrainedModel, on_delete=models.CASCADE, null=False)
-    timestamp = models.DateTimeField(null=False)
-    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=False)
+    operation_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.RESTRICT, null=False)
+    trained_model = models.ForeignKey(TrainedModel, on_delete=models.RESTRICT, null=False)
+    timestamp = models.CharField(max_length=20, null=False)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE)
     result = models.CharField(max_length=20, null=False)
 
     class Meta:

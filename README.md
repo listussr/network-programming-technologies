@@ -84,3 +84,62 @@ PASSWORD_HASHERS = [
 ![](images/db_filling_script.png)
 
 ### 2. [Реализовал функционал для работы с данными в соответствии с тематикой выбранного приложения](Queryes.py)
+
+# Лабораторная 2
+
+## Задача №1.
+
+### 1. [Реализовано API](src/fer_server/fer_database_app/views.py)
+
+### 2. Настроены все маршруты:
+```
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('models/', views.model_list, name='model-list'),
+    path('models/<int:model_id>/', views.model_detail, name='model-detail'),
+    path('datasets/', views.dataset_list, name='dataset-list'),
+    path('datasets/<int:dataset_id>/', views.dataset_detail, name='dataset-detail'),
+    path('trained-models/', views.trained_model_list, name='trained-model-list'),
+    path('trained-models/<int:trained_model_id>/', views.trained_model_detail, name='trained-model-detail'),
+    path('users/', views.user_list, name='user-list'),
+    path('users/<int:user_id>/', views.user_detail, name='user-detail'),
+    path('users/<str:login>/', views.user_login_detail, name='user-login-detail'),
+    path('users-create/', views.create_user_and_user_model, name='user-create'),
+    path('user-model/<int:user_id>/', views.update_user_model_trained_model, name='user-model-update'),
+    path('history/<int:user_id>/', views.history_detail, name='history-detail'),
+    path('predict/<int:user_id>/', views.predict, name='result'),
+    path('image/<int:image_id>/', views.get_image, name='image'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+## Задача №2.
+
+### Выполнено тестирование через Postman:
+
+#### Получение всех моделей: ![](images/Postman_get_all_models.png)
+
+#### Получение модели по ID: ![](images/Postman_get_one_model.png)
+
+#### Получение всех датасетов: ![](images/Postman_get_all_datasets.png)
+
+#### Получение датасета по ID: ![](images/Postman_get_one_dataset.png)
+
+#### Получение всех обученных моделей: ![](images/Postman_get_all_trained.png)
+
+#### Получение обученной модели по ID: ![](images/Postman_get_one_trained.png)
+
+#### Получение всех пользователей: ![](images/Postman_get_all_users.png)
+
+#### Получение пользователя по ID: ![](images/Postman_get_one_user.png)
+
+#### Получение пользователя по логину: ![](images/Postman_get_one_user_id.png)
+
+#### Изменение обученной модели у пользователя: ![](images/Postman_change_one_user_model.png)
+
+#### Добавление нового пользователя: ![](images/Postman_post_one_user.png)
+
+#### Получение картинки по ID: ![](images/Postman_get_one_image.png)
+
+#### Получение истории по ID пользователя ![](images/Postman_get_history_one_user.png)
+
+#### Получение предсказания по изображению: ![](images/NotPostman_post_history_get_result.png)

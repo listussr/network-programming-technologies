@@ -84,3 +84,31 @@ PASSWORD_HASHERS = [
 ![](images/db_filling_script.png)
 
 ### 2. [Реализовал функционал для работы с данными в соответствии с тематикой выбранного приложения](Queryes.py)
+
+#### Получение всех моделей: ![](images/Postman_get_all_models.png)
+
+#### Получение модели по ID: ![](images/Postman_get_one_model.png)
+
+#### Получение всех датасетов: ![](images/Postman_get_all_datasets.png)
+
+#### Получение датасета по ID: ![](images/Postman_get_one_dataset.png)
+
+#### Получение всех обученных моделей: ![](images/Postman_get_all_trained.png)
+
+#### Получение обученной модели по ID: ![](images/Postman_get_one_trained.png)
+
+#### Получение всех пользователей: ![](images/Postman_get_all_users.png)
+
+#### Получение пользователя по ID: ![](images/Postman_get_one_user.png)
+
+#### Получение пользователя по логину: ![](images/Postman_get_one_user_id.png)
+
+#### Изменение обученной модели у пользователя: ![](images/Postman_change_one_user_model.png)
+
+#### Добавление нового пользователя: ![](images/Postman_post_one_user.png)
+
+#### Получение картинки по ID: ![](images/Postman_get_one_image.png)
+
+#### Получение истории по ID пользователя ![](images/Postman_get_history_one_user.png)
+
+#### Получение предсказания по изображению: ![](images/NotPostman_post_history_get_result.png)

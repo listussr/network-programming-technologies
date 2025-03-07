@@ -81,7 +81,7 @@ class UsageHistory(models.Model):
     trained_model = models.ForeignKey(TrainedModel, on_delete=models.RESTRICT, null=False)
     timestamp = models.CharField(max_length=20, null=False)
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
-    result = models.CharField(max_length=20, null=False)
+    result = models.TextField(null=False)
 
     class Meta:
         verbose_name = "Usage History"

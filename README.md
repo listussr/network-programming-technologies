@@ -143,3 +143,99 @@ urlpatterns = [
 #### Получение истории по ID пользователя ![](images/Postman_get_history_one_user.png)
 
 #### Получение предсказания по изображению: ![](images/NotPostman_post_history_get_result.png)
+
+# Лабораторная 3
+## Задача №1.
+### Регистрация нового пользователя.
+```
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def register(request):
+    if request.method == 'POST':
+        user_data = request.data
+
+        if not user_data:
+            return Response({"error": "User data is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user_serializer = RegisterSerializer(data=user_data)
+        if user_serializer.is_valid():
+            user = user_serializer.save()
+        else:
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        first_trained_model = TrainedModel.objects.first()
+
+        try:
+            user_model = UserModel.objects.create(
+                user=user,
+                trained_model=first_trained_model
+            )
+        except Exception as e:
+            user.delete()
+            return Response({"error": f"An unexpected error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({"user_id": user.id}, status=status.HTTP_201_CREATED)
+```
+
+### Вход в систему и получение JWT-токена. 
+```
+urlpatterns = [
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+]    
+```
+
+## Задача №2.
+### Проверка валидности токена и ограничение доступа к определенным эндпоинтам реализованы при помощи 
+```
+@permission_classes([permissions.IsAuthenticated])
+```
+
+## Задача №3.
+### Изменение пароля.
+```
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated])
+def change_password(request):
+    serializer = ChangePasswordSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+
+        if not request.user.check_password(serializer.validated_data.get("old_password")):
+            return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+        
+        request.user.set_password(serializer.validated_data.get("new_password"))
+        request.user.save()
+        update_session_auth_hash(request, request.user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+### Выход из системы (отзыв токена) реализован при помощи
+```
+TokenBlacklistView.as_view()()
+```
+
+## Задача №4.
+### Проверка работы аутентификации с помощью Postman/Curl.
+
+#### Проверка на запрос без токена к незазищённому эндпоинту:
+![](images/Token_Postman_get_one_models.png)
+
+#### Проверка на запрос без токена к защищённому эндпоинту:
+![](images/Token_Postman_get_history_ERROR.png)
+
+#### Проверка на запрос с токеном к тому же эндпоинту:
+![](images/Token_Postman_get_history_OK.png)
+
+#### Проверка на регистрацию пользователя:
+##### 1. При отстутствии подтверждения пароля:
+![](images/Token_Postman_Register_ERROR.png)
+
+##### 2. При подтверждении пароля:
+![](images/Token_Postman_register_OK.png)
+
+#### Проверка на получение токена при входе:
+![](images/Token_Postman_get_tokens.png)
+
+#### Проверка на изменение пароля:
+![](images/Token_Change_password.png)

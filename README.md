@@ -36,9 +36,9 @@
 
 ## Задача 2: Разработка ORM-моделей:
 
-### 1-2. [Определены сущности и связи между ними, реализованы модели с помощью Django ORM](src\fer_server\fer_database_app\models.py)
+### 1-2. [Определены сущности и связи между ними, реализованы модели с помощью Django ORM](src/fer_server/fer_database_app/models.py)
 
-### 3. [Настроены миграции](src\fer_server\fer_database_app\migrations\0001_initial.py)
+### 3. [Настроены миграции](src/fer_server/fer_database_app/migrations/0001_initial.py)
 
 ## Задача 3.
 
@@ -49,8 +49,6 @@
 class UserModel(models.Model):
  
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_model")
-
-    users_id = models.DecimalField(max_digits=4, decimal_places=0, primary_key=True)
 
     interests = models.ManyToManyField(Interest, related_name="user_model", blank=True)
 
@@ -78,7 +76,7 @@ PASSWORD_HASHERS = [
 ```
 
 ## Задача 4.
-### 1. [Написаны скрипты для заполнения базы данных тестовыми данными](src\fer_server\Scripts_DB.py).
+### 1. [Написаны скрипты для заполнения базы данных тестовыми данными](src/fer_server/Scripts_DB.py).
 
 ### База данных с тестовыми данными:
 ![](images/db_filling_script.png)

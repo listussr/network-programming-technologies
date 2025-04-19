@@ -8,10 +8,11 @@ def get_timestamp():
     timestamp = f"{current_time.year}-{current_time.month}-{current_time.day} {current_time.hour}:{current_time.minute}:{current_time.second}"
     return timestamp
 
-def predict_image(image):
+def predict_image(image, model):
     url = 'http://localhost:5000/predict'
     files = {'image': image}
-    response = requests.post(url, files=files, stream=True)
+    model_data = {'model': model}
+    response = requests.post(url, files=files, data=model_data, stream=True)
         
     if response.status_code == 200:
         if response.headers['Content-Type'] == 'application/json':
@@ -27,7 +28,9 @@ def preprocess_image(image):
 
     if response.status_code == 200:
         if response.headers['Content-Type'] == 'application/json':
-            raise Exception({"error": response.content})
+            if 'message' in response.json():
+                raise Exception(response.json()['message'])
+            raise Exception(response.json())
         elif response.headers['Content-Type'] == 'image/png':
             return response.content
 

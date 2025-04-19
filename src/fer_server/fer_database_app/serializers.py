@@ -39,7 +39,7 @@ class UsageHistorySerializer(serializers.ModelSerializer):
     image_id = serializers.PrimaryKeyRelatedField(source='image', read_only=True)
     class Meta:
         model = UsageHistory
-        fields = ['trained_model_id', 'timestamp', 'image_id', 'result']
+        fields = ['operation_id', 'trained_model_id', 'timestamp', 'image_id', 'result']
         depth = 1
 
 class UserModelUpdateSerializer(serializers.ModelSerializer):
@@ -85,7 +85,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data['password'] != data['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
+            raise serializers.ValidationError({"error": "Пароли не совпадают!"})
         return data
 
     def create(self, validated_data):

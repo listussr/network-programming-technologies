@@ -10,6 +10,7 @@ class Dataset(models.Model):
     features_size = models.IntegerField(null=False)
     targets_size = models.IntegerField(null=False)
     set_size = models.IntegerField(null=True)
+    set_classes = models.TextField(null=True)
 
     class Meta:
         verbose_name = "Dataset"

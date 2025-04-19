@@ -1,3 +1,4 @@
+import json
 from .models import *
 from .serializers import *
 from rest_framework.response import Response
@@ -16,6 +17,7 @@ from rest_framework import permissions, status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import update_session_auth_hash
 from rest_framework_simplejwt.views import TokenBlacklistView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
@@ -175,6 +177,29 @@ def trained_model_list(request):
         return Response(serializer.data)
 
 @api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def get_trained_model_by_model_dataset(request, model_id, dataset_id):
+    """Getting trained model by dataset and model id
+
+    Args:
+        request (None): None
+        model_id (int): Id of the chosen model
+        dataset_id (int): Id of the chosen dataset
+
+    Returns:
+        Json: Trained model entity
+    """
+    try:
+        trained_model = TrainedModel.objects.filter(dataset_id=dataset_id, model_id=model_id)
+    except TrainedModel.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = TrainedModelSerializer(trained_model, many=True)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def user_detail(request, user_id):
     """Getting user by ID
@@ -270,7 +295,7 @@ def user_list(request):
         return Response(serializer.data)
 
 @api_view(['GET'])
-def history_detail(request, user_id):
+def history_detail(request):
     """Getting history by ID of the user
 
     Args:
@@ -281,6 +306,7 @@ def history_detail(request, user_id):
         JsonList:
         [
             {
+                "operation_id": number,
                 "trained_model_id": number,
                 "timestamp": "timestamp",
                 "image_id": number,
@@ -289,16 +315,16 @@ def history_detail(request, user_id):
         ]
     """
     try:
-        usage_history = UsageHistory.objects.filter(user_id=user_id)
+        usage_history = UsageHistory.objects.filter(user_id=request.user.id)
     except UsageHistory.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     serializer = UsageHistorySerializer(usage_history, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data)    
 
 @api_view(['PUT'])
 @permission_classes([permissions.IsAuthenticated])
-def update_user_model_trained_model(request, user_id):
+def update_user_model_trained_model(request):
     """Updating user's trained model by user ID
 
     Args:
@@ -312,7 +338,8 @@ def update_user_model_trained_model(request, user_id):
             }
     """
     try:
-        user_model = get_object_or_404(UserModel, pk=user_id)
+        print(request.user.id)
+        user_model = get_object_or_404(UserModel, pk=request.user.id)
     except UserModel.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -325,7 +352,7 @@ def update_user_model_trained_model(request, user_id):
 @csrf_exempt
 @require_POST
 @permission_classes([permissions.IsAuthenticated])
-def predict(request, user_id):
+def predict(request):
     """Getting prediction by an image
 
     Args:
@@ -340,13 +367,16 @@ def predict(request, user_id):
         }       
     """
     image_bytes = request.FILES.get('image')
-
+    auth = JWTAuthentication()
+    user, token = auth.authenticate(request)
+    request.user = user
+    user_id = request.user.id
     if not user_id:
         return JsonResponse({'error': 'User ID is required'}, status=400)
 
     if not image_bytes:
         return JsonResponse({'error': 'Image file is required'}, status=400)
-
+    
     user = get_object_or_404(User, pk=user_id)
 
     trained_model = UserModel.objects.get(user=user).trained_model
@@ -365,7 +395,7 @@ def predict(request, user_id):
 
         result = preprocess_image(image=img_io)
     except Exception as e:
-        return JsonResponse({'error' : str(e)}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)
 
     # Saving cropped image to database
     try:
@@ -379,7 +409,10 @@ def predict(request, user_id):
 
     # Getting prediction on cropped image
     try:
-        prediction = predict_image(image=result)
+        user_ = get_object_or_404(User, username=user)
+        user_model = get_object_or_404(UserModel, user=user_)
+        tm_path = user_model.trained_model.model_path
+        prediction = predict_image(image=result, model=tm_path)
     except Exception as e:
         return JsonResponse({'error': f'Prediction failed: {str(e)}'}, status=500)
 
@@ -412,6 +445,63 @@ def get_image(request, image_id):
         return FileResponse(image.image.open(), content_type='image/jpeg')
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def history_by_id(request, id):
+    """Getting one history operation by id
+
+    Args:
+        request (None): None
+        id (int): id of the history operation
+
+    Returns:
+        Json:
+            {
+                "operation_id": number,
+                "trained_model_id": number,
+                "timestamp": "timestamp",
+                "image_id": number,
+                "result": "list of numbers"
+            } 
+    """
+    try:
+        operation = get_object_or_404(UsageHistory, operation_id=id)
+    except UsageHistory.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = UsageHistorySerializer(operation)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def current_model(request):
+    """Getting one history operation by id
+
+    Args:
+        request (None): None
+
+    Returns:
+        Json:
+            {
+                "trained_model_id": number,
+            } 
+    """
+    print(request.user)
+    name = request.user
+    try:
+        user_ = get_object_or_404(User, username=name)
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        user_model = get_object_or_404(UserModel, user=user_)
+    except UserModel.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return Response({'trained_model_id': user_model.trained_model.trained_model_id})
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])

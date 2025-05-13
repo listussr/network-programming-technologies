@@ -576,4 +576,6 @@ def logout(request):
     Returns:
         None: None
     """
-    return TokenBlacklistView.as_view()(request).data
+    blacklist_view = TokenBlacklistView.as_view()
+    response = blacklist_view(request._request)
+    return Response(response.data, status=response.status_code)

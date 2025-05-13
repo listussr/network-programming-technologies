@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'website/css/styles.css' %}">
+    <script src="{% static 'website/js/update.js' %}"></script>
+    <title>Facial Emotion Analyzer</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h3>Facial Emotion Analyzer</h3>
+        </div>
+        <div class="main-content-history">
+            <div class="rect-empty history-roundrect">
+                {% if history %}
+                    <ul class="montserrat-normal column-div" style="width: 80%; margin-top: 0%;">
+                        {% for item in history %}
+                            <li id="history-{{ item.id }}" class="montserrat-semi-bold rect-empty li-item-history" style="color: white;">
+                                <a href="{% url 'history_detail' item_id=item.id %}" class="row-space-between history-reference">
+                                    <p style="flex:5; margin-left: 5%;">
+                                        {{ item.timestamp }}
+                                    </p>
+                                    <p style="flex:5"> 
+                                        ||
+                                    </p>
+                                    <p style="flex: 5;"> 
+                                        {{ item.number }}
+                                    </p>
+                                    <p style="flex: 5;">
+                                        ||
+                                    </p>
+                                    <p style="flex: 5;">
+                                        {{ item.predicted_emotion }}
+                                    </p>
+                                    <img src="{% static 'website/images/chevron_right.png' %}" style="margin-right: 2%; height: 50%; flex: 1;">
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        <div class="navbar">
+            <div class="navbar-item-on">
+                <p class="half-top-left">История</p>
+            </div>
+            <a href="{% url 'home' %}" class="navbar-item-off">
+                <p class="half-top-left">Главная</p>
+            </a>
+            <a href="{% url 'predict' %}" class="navbar-item-off">
+                <p class="half-top-left">Предсказать</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

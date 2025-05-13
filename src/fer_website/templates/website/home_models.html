@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'website/css/styles.css' %}">
+    <title>Facial Emotion Analyzer</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h3>Facial Emotion Analyzer</h3>
+        </div>
+
+        <div class="main-content-home">
+            <div class="roundrect">
+                <p class="bold-montserrat flex-one">Выберите набор данных</p>
+
+                <form method="post" class="flex-four" id="model-form">
+                    {% csrf_token %}
+                    <label for="model-select" class="label-style">Выберите модель</label>
+                    <select name="model" id="model-select" class="styled-select">
+                        <option value="">-- Выберите модель --</option>
+                        {% for item in models %}
+                            <option value="{{item}}">{{item}}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+
+                <div class="model-dataset-label">
+                    <div class="row-space-between flex-one">
+                        <p class="montserrat-normal margin-horizontal flex-two">Название:</p>
+                        <p id="model-label" class="montserrat-normal margin-horizontal flex-four">{{ selected_model.name|default:"Не выбрано" }}</p>
+                    </div>
+                    <div class="row-space-between border-top flex-two">
+                        <p class="montserrat-normal margin-horizontal flex-two">Описание:</p>
+                        <p id="model-description" class="montserrat-normal margin-horizontal flex-four">{{ selected_model.description|default:"Описание модели" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons-container-home">
+                <form method="post" action="{% url 'logout_button' %}" class="button-exit">
+                    {% csrf_token %}
+                    <button type="submit" name="my_button" value="pressed" class="transparent-button montserrat-normal">Выйти из профиля</button>
+                </form>
+                <div class="button-group">
+                    <a href="{% url 'home' %}" class="button-content-type-home">
+                        Настройка конфигурации
+                    </a>
+                    <a href="{% url 'home_datasets' %}" class="button-content-type-home">
+                        Информация о наборах данных
+                    </a>
+                    <a href="{% url 'home_models' %}" class="button-content-type-home-on">
+                        Информация о моделях
+                    </a>
+                    <a href="{% url 'home_trained_models' %}" class="button-content-type-home">
+                        Информация об обученных моделях
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="navbar">
+            <a href="{% url 'history' %}" class="navbar-item-off">
+                <p class="half-top-left">История</p>
+            </a>
+            <div class="navbar-item-on">
+                <p class="half-top-left">Главная</p>
+            </div>
+            <a href="{% url 'predict' %}" class="navbar-item-off">
+                <p class="half-top-left">Предсказать</p>
+            </a>
+        </div>
+    </div>
+
+    <script src="{% static 'website/js/update_models.js' %}"></script>
+</body>
+</html>

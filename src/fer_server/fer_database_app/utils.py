@@ -9,7 +9,7 @@ def get_timestamp():
     return timestamp
 
 def predict_image(image, model):
-    url = 'http://localhost:5000/predict'
+    url = 'http://networks:5050/predict'
     files = {'image': image}
     model_data = {'model': model}
     response = requests.post(url, files=files, data=model_data, stream=True)
@@ -22,7 +22,7 @@ def predict_image(image, model):
         raise Exception(f"{response.status_code}, {response.content}")
 
 def preprocess_image(image):
-    url = 'http://localhost:5050/detect'
+    url = 'http://preprocess:5000/detect'
     files = {'image': image}
     response = requests.post(url, files=files, stream=True)
 

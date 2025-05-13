@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'website/css/styles.css' %}">
+    <title>Facial Emotion Analyzer</title>
+    <script src="{% static 'website/js/form.js' %}"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h3>Facial Emotion Analyzer</h3>
+        </div>
+        <div class="main-content-home">
+            <div class="elements-row full-height">
+                <div class="flex-three margin-round">
+                    <a href="{% url 'history' %}" class="flex-one row-space-between rect-empty history-reference" style="background-color: #F1FAEE;">
+                        <img src="{% static 'website/images/chevron_left.png' %}" style="margin-left: 5%; height: 4vh; flex: 1;">
+                        <p class="montserrat-normal" style="flex: 9;">Вернуться к истории</p>
+                    </a>
+                    <div class="flex-two rect-empty column-div montserrat-normal" style="background-color: #F1FAEE; margin-top: 5vh; height: 25vh;">
+                        <p>
+                            Запрос выполнен:
+                        </p>
+                        {% if timestamp %}
+                            <p>
+                                {{ timestamp }}
+                            </p>
+                        {% else %}
+                            <p>
+                                2000-01-01 00:00:00
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex-four rect-empty margin-round column-div">
+                    {% if processed_image %}
+                        <img id="processedImage" src="{{ processed_image }}" alt="Обработанное изображение" class="montserrat-normal">
+                    {% endif %}
+                </div>
+                <div class="probabilities-label flex-four margin-round">
+                    <p class="montserrat-normal flex-one">Предсказания</p>
+                    {% if probabilities %}
+                        <ul class="montserrat-normal flex-six column-div margin-round" style="width: 80%;">
+                            {% for item in probabilities %}
+                                <li class="montserrat-normal rect-empty flex-one li-item">
+                                    <p style="margin: 0;">{{ item.class }}:</p> 
+                                    <p style="margin: 0;">{{ item.probability }} %</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if model %}
+                        <div class="flex-one montserrat-normal">
+                            <p>{{ model }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="navbar">
+            <div class="navbar-item-on">
+                <p class="half-top-left">История</p>
+            </div>
+            <a href="{% url 'home' %}" class="navbar-item-off">
+                <p class="half-top-left">Главная</p>
+            </a>
+            <a href="{% url 'predict' %}" class="navbar-item-off">
+                <p class="half-top-left">Предсказать</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'website/css/styles.css' %}">
+    <title>Facial Emotion Analyzer</title>
+    <script src="{% static 'website/js/form.js' %}"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h3>Facial Emotion Analyzer</h3>
+        </div>
+        <div class="main-content-home">
+            <div class="elements-row full-height">
+                <div id="upload-form" class="flex-one margin-round">
+                    <form id="uploadForm" method="post" enctype="multipart/form-data">
+                        <label for="fileInput" class="montserrat-normal column-div" style="padding: 3%; height: 100%;">
+                            Выберите файл
+                            <img src="{% static 'website/images/download_icon.png' %}" width="30" height="30" style="padding: 10%; margin-top: 5%;">
+                        </label>
+                        <input type="file" id="fileInput" name="image" style="display: none;">
+                    </form>
+                </div>
+                <div class="flex-four rect-empty margin-round column-div">
+                    {% if processed_image %}
+                        <img src="{{ processed_image }}" alt="Обработанное изображение">
+                    {% endif %}
+                </div>
+                <div class="probabilities-label flex-four margin-round">
+                    <p class="montserrat-normal flex-one">Предсказания</p>
+                    {% if probabilities %}
+                        <ul>
+                            {% for item in probabilities %}
+                                <li>{{ item.class }}: {{ item.probability }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="navbar">
+            <a href="{% url 'history' %}" class="navbar-item-off">
+                <p class="half-top-left">История</p>
+            </a>
+            <a href="{% url 'home' %}" class="navbar-item-off">
+                <p class="half-top-left">Главная</p>
+            </a>
+            <div class="navbar-item-on">
+                <p class="half-top-left">Предсказать</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

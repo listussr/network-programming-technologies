@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'website/css/styles.css' %}">
+    <title>Facial Emotional Analyzer</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+          <h3 class="montserrat">Facial Emotional Analyzer</h3>
+        </div>
+        <div class="main-content">
+            {% if messages %}
+            <ul class="column-div">
+                {% for message in messages %}
+                <li {% if message.tags %} class="montserrat-normal flex-one {{ message.tags }}"{% endif %}>
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="registration">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="login-form">
+                        {{ form.login.label_tag }}
+                        {{ form.login }}
+                    </div>
+                    <div class="password-form">
+                        {{ form.password.label_tag }}
+                        {{ form.password }}
+                    </div>
+                    <div class="password-2-form">
+                        {{ form.password2.label_tag }}
+                        {{ form.password2 }}
+                    </div>
+                    <div class="email-form">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                    </div>
+                    <button type="submit" class="button-submit-r">Продолжить</button>
+                </form>
+                <a href="{% url 'login' %}" class="button-redirect">Войти в аккаунт</a>
+            </div>
+        </div>
+      </div>
+</body>
+</html>
